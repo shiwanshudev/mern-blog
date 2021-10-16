@@ -1,33 +1,34 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function ViewBlog() {
   const { id } = useParams();
-  /* Temp */
-  const arrObj = [
-    {
-      _id: 1,
-      title: "First Title",
-      description: "Lorem ipsum dolor sit amet",
-    },
-    {
-      _id: 2,
-      title: "Second Title",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ultrices finibus ex in dictum. Proin consequat ligula est. Ut sollicitudin neque sed justo laoreet cursus. Donec sit amet consequat ante, a interdum nisi. Donec porta lorem vitae efficitur congue. Nulla fermentum interdum ligula, vel lacinia mauris consectetur nec. Sed interdum ultricies arcu, eget lacinia eros tempor eu. Vivamus dui leo, blandit eu orci ac, faucibus volutpat ante. Nullam ultricies massa ac nibh aliquet, ut suscipit ipsum tempus. Aliquam eget aliquam nibh, vitae malesuada orci. Curabitur nec egestas lectus, eu tincidunt neque. Quisque sapien leo, faucibus tristique tempor sed, molestie quis ligula. Aliquam tristique, purus non elementum fermentum, enim nisi cursus tellus, eget efficitur tortor nisi sit amet odio. ",
-      time: "1 June 2021",
-    },
-    {
-      _id: 3,
-      title: "Third Title",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ultrices finibus ex in dictum. Proin consequat ligula est. Ut sollicitudin neque sed justo laoreet cursus. Donec sit amet consequat ante, a interdum nisi. Donec porta lorem vitae efficitur congue. Nulla fermentum interdum ligula, vel lacinia mauris consectetur nec. Sed interdum ultricies arcu, eget lacinia eros tempor eu. Vivamus dui leo, blandit eu orci ac, faucibus volutpat ante. Nullam ultricies massa ac nibh aliquet, ut suscipit ipsum tempus. Aliquam eget aliquam nibh, vitae malesuada orci. Curabitur nec egestas lectus, eu tincidunt neque. Quisque sapien leo, faucibus tristique tempor sed, molestie quis ligula. Aliquam tristique, purus non elementum fermentum, enim nisi cursus tellus, eget efficitur tortor nisi sit amet odio. ",
-      time: "1 June 2021",
-    },
-  ];
-  const foundBlog = arrObj.find((blogObj) => blogObj._id == id);
-  console.log(foundBlog);
-  const { title, description, time } = foundBlog;
-  // Temp
+  const [title, setTitle] = useState("");
+  const [description, setDesc] = useState("");
+  const [time, setTime] = useState("");
+  const history = useHistory();
+  useEffect(() => {
+    fetchBlog();
+  }, []);
+
+  const fetchBlog = async () => {
+    const response = await axios.get(`${process.env.REACT_APP_API_URI}/${id}`);
+    setTitle(response.data.title);
+    setTime(response.data.time);
+    setDesc(response.data.description);
+  };
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `${process.env.REACT_APP_API_URI}/${id}`
+      );
+      console.log(response);
+      history.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="container">
       <div
@@ -55,7 +56,9 @@ export default function ViewBlog() {
             >
               Edit
             </Link>
-            <button className="btn btn-danger">Delete</button>
+            <button className="btn btn-danger" onClick={handleDelete}>
+              Delete
+            </button>
           </div>
         </div>
       </div>
